@@ -10,6 +10,21 @@ win:
       arch:
         - x64
 
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  minimumSystemVersion: '10.15'
+  hardenedRuntime: true
+  entitlements: entitlements.plist
+  entitlementsInherit: entitlements.plist
+
 directories:
   buildResources: ./build-resources
 
