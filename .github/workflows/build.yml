@@ -5,7 +5,7 @@ on:
     tags:
       - 'v*.*.*'
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -27,6 +27,11 @@ jobs:
         node-version: '16.x'
         cache: 'yarn'
 
+    - name: Set up Python (for native modules)
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
     - name: Install dependencies
       run: yarn install --frozen-lockfile
 
@@ -41,7 +46,17 @@ jobs:
 
     - name: Package application (macOS)
       if: matrix.os == 'macos-latest'
-      run: yarn run dist
+      run: |
+        # 先构建 x64 架构
+        electron-builder --mac --x64
+        # 清理临时文件
+        rm -rf dist/mac
+        # 构建 arm64 架构
+        electron-builder --mac --arm64
+        # 清理临时文件
+        rm -rf dist/mac
+        # 构建通用二进制文件 (universal)
+        electron-builder --mac --universal
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -69,8 +84,12 @@ jobs:
       with:
         name: macos-builds
         path: |
-          dist/*.dmg
-          dist/*.zip
+          dist/*x64*.dmg
+          dist/*x64*.zip
+          dist/*arm64*.dmg
+          dist/*arm64*.zip
+          dist/*universal*.dmg
+          dist/*universal*.zip
 
     - name: Upload Linux artifacts
       if: matrix.os == 'ubuntu-latest'
