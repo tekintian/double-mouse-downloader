@@ -2,6 +2,7 @@ name: Build and Release
 
 on:
   push:
+    branches: [ master ]
     tags:
       - 'v*.*.*'
   pull_request:
@@ -80,6 +81,8 @@ jobs:
         path: |
           dist/*.exe
           dist/*.7z
+        if-no-files-found: warn
+        retention-days: 7
 
     - name: Upload macOS artifacts
       if: matrix.os == 'macos-latest'
@@ -93,6 +96,8 @@ jobs:
           dist/*arm64*.zip
           dist/*universal*.dmg
           dist/*universal*.zip
+        if-no-files-found: warn
+        retention-days: 7
 
     - name: Upload Linux artifacts
       if: matrix.os == 'ubuntu-latest'
@@ -103,11 +108,13 @@ jobs:
           dist/*.deb
           dist/*.rpm
           dist/*.tar.gz
+        if-no-files-found: warn
+        retention-days: 7
 
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -131,5 +138,6 @@ jobs:
           dist/linux-builds/*.rpm
           dist/linux-builds/*.tar.gz
         draft: true
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
