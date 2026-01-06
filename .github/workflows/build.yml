@@ -60,8 +60,6 @@ jobs:
     - name: Package application (macOS)
       if: matrix.os == 'macos-15'
       run: |
-        # 清理临时文件以避免冲突
-        rm -rf dist/mac
         # 构建 arm64 架构
         yarn run dist --mac --arm64 --publish never
 
