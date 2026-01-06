@@ -91,6 +91,7 @@
   "build": {
     "files": [
       "build/**/*",
+      "bin/**/*",
       "node_modules/**/*",
       "!node_modules/.cache",
       "!node_modules/.bin",

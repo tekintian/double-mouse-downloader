@@ -31,6 +31,9 @@ asar: true
 asarUnpack:
   - "./bin/${platform}/${arch}/*"  # 二进制文件不打包到 asar 中
 
+# 配置构建产物的文件名格式，确保包含架构信息
+artifactName: "${name}-${version}-${arch}.${ext}"
+
 win:
   target:
     - target: nsis
@@ -50,7 +53,7 @@ mac:
       arch:
         - x64
         - arm64
-  minimumSystemVersion: '10.15'
+  minimumSystemVersion: '10.13'
   hardenedRuntime: true
   entitlements: entitlements.plist
   entitlementsInherit: entitlements.plist
