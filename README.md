@@ -88,7 +88,18 @@ const binaries = {
 ## 快速开始
 
 ### 安装依赖
+
+> 请确保已安装 Node.js 16.20 和 Yarn 包管理器 。如果未安装，请根据您的操作系统从 [Node.js 官方网站](https://nodejs.org/) 下载并安装。
+同时当前系统还需要安装:
+ - [FFmpeg](https://ffmpeg.org/download.html) 。如果未安装，请根据您的操作系统从 [FFmpeg 官方网站](https://ffmpeg.org/download.html) 下载并安装。
+
+ - [Aria2](https://aria2.github.io/) 。如果未安装，请根据您的操作系统从 [Aria2 官方网站](https://aria2.github.io/) 下载并安装。
+
+
+
 ```bash
+# node 版本 16.20.x
+# yarn 版本: 1.22.x
 yarn install --frozen-lockfile
 ```
 
