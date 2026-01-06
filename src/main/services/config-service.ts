@@ -52,6 +52,11 @@ export function getStore() {
               description: '默认音频品质',
               default: AudioQuality.HIGH.id,
             },
+            saveAudio: {
+              type: 'boolean',
+              description: '保存独立音频',
+              default: false,
+            },
           },
           // 这样写才会生成默认配置，下同
           default: {},

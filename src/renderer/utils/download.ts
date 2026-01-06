@@ -164,6 +164,8 @@ export async function mergeVideoIfCompleted(
   const videoAria = ariaMap[task.taskVideo.gid];
   const audioAria = ariaMap[task.taskAudio.gid];
   const newTask = cloneDeep(task);
+  const config = store.getState().config.data;
+  if (!config) throw new Error('无法获取配置');
 
   if (
     newTask.taskStatus === 'active' &&
@@ -183,11 +185,30 @@ export async function mergeVideoIfCompleted(
 
       await jsBridge.ffmpeg.merge(videoPath, audioPath, outputPath);
 
-      newTask.taskStatus = 'complete';
+      // 保存独立音频
+      if (config.download.saveAudio) {
+        try {
+          // 直接使用原始的音频文件，避免重复编码
+          const audioFileName = newTask.taskFileName.replace(/\.mp4$/i, '.m4a');
+          const audioOutputPath = await jsBridge.path.join(
+            videoAria.dir,
+            audioFileName
+          );
+
+          // 复制原始音频文件而不是重新提取
+          await jsBridge.shell.cp(audioPath, audioOutputPath);
+        } catch (audioErr) {
+          console.error('保存独立音频失败：', audioErr);
+          // 不影响整体下载流程，只记录错误
+        }
+      }
 
       // 移除临时文件
       jsBridge.shell.rm(videoPath);
       jsBridge.shell.rm(audioPath);
+
+      // 混流成功，更新状态为完成
+      newTask.taskStatus = 'complete';
 
       const noti = new Notification(`下载成功：${task.taskFileName}`, {
         body: '点击此处打开文件夹所在位置。',

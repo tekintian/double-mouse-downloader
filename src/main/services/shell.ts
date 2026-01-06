@@ -11,6 +11,9 @@ const fns = {
   rm: async (filePath: string) => {
     await fs.promises.rm(filePath);
   },
+  cp: async (srcPath: string, destPath: string) => {
+    await fs.promises.copyFile(srcPath, destPath);
+  },
   openPath: shell.openPath,
 };
 
