@@ -39,6 +39,17 @@ jobs:
     - name: Install dependencies
       run: yarn install --frozen-lockfile
 
+    # 安装系统依赖（移到构建步骤之前）
+    - name: Install system dependencies (macOS)
+      if: startsWith(matrix.os, 'macos-')
+      run: brew install aria2 ffmpeg
+
+    - name: Install system dependencies (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y rpm libarchive-tools aria2 ffmpeg
+
     - name: Build application
       run: yarn run build
 
@@ -49,8 +60,6 @@ jobs:
     - name: Package application (macOS)
       if: matrix.os == 'macos-15'
       run: |
-        # 安装依赖
-        brew install aria2 ffmpeg
         # 清理临时文件以避免冲突
         rm -rf dist/mac
         # 构建 arm64 架构
@@ -59,17 +68,12 @@ jobs:
     - name: Package application (macOS Intel)
       if: matrix.os == 'macos-15-intel'
       run: |
-        # 安装依赖
-        brew install aria2 ffmpeg
         # 构建 x64 架构
         yarn run dist --mac --x64 --publish never
 
     - name: Package application (Linux)
       if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y rpm libarchive-tools aria2 ffmpeg
-        yarn run dist --publish never
+      run: yarn run dist --publish never
 
     - name: Upload Windows artifacts
       if: matrix.os == 'windows-latest'
