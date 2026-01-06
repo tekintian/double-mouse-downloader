@@ -6,6 +6,9 @@ publish:
   repo: double-mouse-downloader
   releaseType: release
 
+# 添加图标配置
+icon: ./build-resources/icon.png
+
 # 添加压缩配置
 compression: maximum
 # 移除不必要的文件
@@ -13,6 +16,8 @@ files:
   - from: build
     to: build
     filter: ["**/*", "!**/*.map"]
+  - from: bin/${platform}/${arch}
+    to: bin/${platform}/${arch}
   - from: node_modules
     to: node_modules
     filter: [
@@ -51,6 +56,8 @@ mac:
   entitlementsInherit: entitlements.plist
   # 确保mac平台也使用相同的文件名格式
   artifactName: "${name}-${version}-${arch}.${ext}"
+  # 添加mac平台图标配置
+  icon: ./build-resources/icon.png
 
 win:
   target:
@@ -62,6 +69,8 @@ win:
         - x64
   # 确保windows平台也使用相同的文件名格式
   artifactName: "${name}-${version}-${arch}.${ext}"
+  # 添加windows平台图标配置
+  icon: ./build-resources/icon.png
 
 directories:
   buildResources: ./build-resources
@@ -73,4 +82,5 @@ nsis:
   language: '2052'
 
 extraResources:
-  - ./bin/${platform}/${arch}/*
+  - from: bin/${platform}/${arch}
+    to: bin/${platform}/${arch}
