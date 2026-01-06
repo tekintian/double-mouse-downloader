@@ -95,7 +95,7 @@ const binaries = {
 
  - [Aria2](https://aria2.github.io/) 。如果未安装，请根据您的操作系统从 [Aria2 官方网站](https://aria2.github.io/) 下载并安装。
 
-
+ - Electron v19.0.3
 
 ```bash
 # node 版本 16.20.x

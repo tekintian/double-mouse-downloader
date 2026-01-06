@@ -101,8 +101,8 @@ jobs:
       with:
         name: macos-intel-builds
         path: |
-          dist/*x64*.dmg
-          dist/*x64*.zip
+          dist/*.dmg
+          dist/*.zip
         if-no-files-found: warn
         retention-days: 2
 
