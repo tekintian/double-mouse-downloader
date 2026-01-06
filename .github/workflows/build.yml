@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, macos-15, macos-15-intel, ubuntu-latest]
 
     steps:
     - name: Checkout code
@@ -47,24 +47,28 @@ jobs:
       run: yarn run dist --publish never
 
     - name: Package application (macOS)
-      if: matrix.os == 'macos-latest'
+      if: matrix.os == 'macos-15'
       run: |
-        # 构建 x64 架构
-        yarn run dist --mac --x64 --publish never
+        # 安装依赖
+        brew install aria2 ffmpeg
         # 清理临时文件以避免冲突
         rm -rf dist/mac
         # 构建 arm64 架构
         yarn run dist --mac --arm64 --publish never
-        # 清理临时文件以避免冲突
-        rm -rf dist/mac
-        # 构建通用二进制文件 (universal)
-        yarn run dist --mac --universal --publish never
+
+    - name: Package application (macOS Intel)
+      if: matrix.os == 'macos-15-intel'
+      run: |
+        # 安装依赖
+        brew install aria2 ffmpeg
+        # 构建 x64 架构
+        yarn run dist --mac --x64 --publish never
 
     - name: Package application (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install -y rpm libarchive-tools
+        sudo apt-get install -y rpm libarchive-tools aria2 ffmpeg
         yarn run dist --publish never
 
     - name: Upload Windows artifacts
@@ -76,10 +80,10 @@ jobs:
           dist/*.exe
           dist/*.7z
         if-no-files-found: warn
-        retention-days: 7
+        retention-days: 2
 
     - name: Upload macOS artifacts
-      if: matrix.os == 'macos-latest'
+      if: matrix.os == 'macos-15'
       uses: actions/upload-artifact@v4
       with:
         name: macos-builds
@@ -88,10 +92,19 @@ jobs:
           dist/*x64*.zip
           dist/*arm64*.dmg
           dist/*arm64*.zip
-          dist/*universal*.dmg
-          dist/*universal*.zip
         if-no-files-found: warn
-        retention-days: 7
+        retention-days: 2
+
+    - name: Upload macOS Intel artifacts
+      if: matrix.os == 'macos-15-intel'
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-intel-builds
+        path: |
+          dist/*x64*.dmg
+          dist/*x64*.zip
+        if-no-files-found: warn
+        retention-days: 2
 
     - name: Upload Linux artifacts
       if: matrix.os == 'ubuntu-latest'
@@ -105,7 +118,7 @@ jobs:
           dist/*.tar.gz
           dist/*.snap
         if-no-files-found: warn
-        retention-days: 7
+        retention-days: 2
 
   release:
     needs: build
@@ -130,6 +143,8 @@ jobs:
           dist/windows-builds/*.7z
           dist/macos-builds/*.dmg
           dist/macos-builds/*.zip
+          dist/macos-intel-builds/*.dmg
+          dist/macos-intel-builds/*.zip
           dist/linux-builds/*.deb
           dist/linux-builds/*.rpm
           dist/linux-builds/*.AppImage

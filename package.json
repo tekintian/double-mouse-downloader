@@ -1,6 +1,6 @@
 {
   "name": "double-mouse-downloader",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "鼠鼠下载器——跨平台哔哩哔哩视频下载工具。",
   "main": "./build/main/main.js",
   "private": "true",
@@ -11,9 +11,10 @@
     "start:renderer": "vite -c ./src/renderer/vite.config.js",
     "prepare-debug": "npm-run-all --parallel start:main:watch start:renderer",
     "clear": "rimraf ./build",
+    "check-binaries": "node check-and-copy-binaries.js",
     "build:main": "tsc -p ./src/main/tsconfig.json",
     "build:renderer": "vite build -c ./src/renderer/vite.config.js",
-    "build": "npm-run-all clear build:main build:renderer",
+    "build": "npm run check-binaries && npm-run-all clear build:main build:renderer",
     "dist": "npm run build && electron-builder",
     "pack": "npm run build && electron-builder --dir",
     "lint": "prettier --write . && eslint --fix .",
@@ -86,5 +87,16 @@
     "semver": "^7.3.7",
     "tough-cookie": "^4.0.0",
     "ws": "^8.8.0"
+  },
+  "build": {
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "!node_modules/.cache",
+      "!node_modules/.bin",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/**/test/**",
+      "!**/node_modules/**/docs/**"
+    ]
   }
 }

@@ -6,6 +6,31 @@ publish:
   repo: double-mouse-downloader
   releaseType: release
 
+# 添加压缩配置
+compression: maximum
+# 移除不必要的文件
+files:
+  - from: build
+    to: build
+    filter: ["**/*", "!**/*.map"]
+  - from: node_modules
+    to: node_modules
+    filter: [
+      "!**/*.md",
+      "!**/test/**",
+      "!**/tests/**",
+      "!**/docs/**",
+      "!**/.github/**",
+      "!**/examples/**",
+      "!**/benchmark/**"
+    ]
+  - package.json
+
+# 添加 asar 打包
+asar: true
+asarUnpack:
+  - "./bin/${platform}/${arch}/*"  # 二进制文件不打包到 asar 中
+
 win:
   target:
     - target: nsis
@@ -38,9 +63,6 @@ nsis:
   allowToChangeInstallationDirectory: true
   installerLanguages: 'zh_CN'
   language: '2052'
-
-files:
-  - ./build/**/*
 
 extraResources:
   - ./bin/${platform}/${arch}/*
