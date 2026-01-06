@@ -57,10 +57,34 @@ async function main() {
   mainWindow.once('ready-to-show', () => mainWindow.show());
 
   if (process.env.NODE_ENV === 'development') {
-    await installExtension([REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS]);
+    try {
+      await installExtension([REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS]);
+      console.log('开发者工具扩展安装成功');
+    } catch (error) {
+      console.warn('开发者工具扩展安装失败:', error);
+      // 继续执行，不阻塞应用启动
+    }
     mainWindow.once('show', () => mainWindow.webContents.openDevTools());
-    // 开发环境加载开发服务器 URL
-    await mainWindow.loadURL('http://localhost:3000/#/main');
+
+    // 等待开发服务器启动
+    let retries = 30; // 最多等待30秒
+    while (retries > 0) {
+      try {
+        const VITE_PORT = process.env.VITE_PORT || '3000';
+        await mainWindow.loadURL(`http://localhost:${VITE_PORT}/#/main`);
+        console.log('成功加载开发服务器');
+        break;
+      } catch (error) {
+        console.log(`等待开发服务器启动... (${retries} 次重试)`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        retries--;
+      }
+    }
+
+    if (retries === 0) {
+      console.error('开发服务器启动超时');
+      await mainWindow.loadURL('data:text/html,<h1>开发服务器启动失败</h1><p>请检查控制台日志</p>');
+    }
   } else {
     await mainWindow.loadFile('./build/renderer/index.html', {
       hash: '#/main',

@@ -106,6 +106,12 @@ yarn install --frozen-lockfile
 ### 开发模式
 ```bash
 yarn start
+
+# 程序运行端口 默认 3000 , 通过环境变量 VITE_PORT 可以自定义端口
+# 在 package.json 中可以自定义端口
+# 开发模式下，渲染进程会从该端口加载内容
+# 生产模式下，渲染进程会从打包后的静态资源加载内容
+
 ```
 
 ### 构建应用
@@ -128,6 +134,8 @@ npm run dist -- --linux
 
 # 打包 macOS x64 架构，不发布到 GitHub Releases，压缩方式为 store，不签名
 rm -rf dist build && npm run dist -- --mac --x64 --publish never --config.compression=store --config.mac.identity=null
+
+
 ```
 
 ## 技术栈
