@@ -89,15 +89,22 @@
     "ws": "^8.8.0"
   },
   "build": {
+    "directories": {
+      "buildResources": "build-resources"
+    },
     "files": [
       "build/**/*",
-      "bin/**/*",
-      "node_modules/**/*",
-      "!node_modules/.cache",
-      "!node_modules/.bin",
-      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
-      "!**/node_modules/**/test/**",
-      "!**/node_modules/**/docs/**"
-    ]
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin"
+      }
+    ],
+    "icon": "build-resources/icon.png",
+    "mac": {
+      "icon": "build-resources/icon.png"
+    }
   }
 }
