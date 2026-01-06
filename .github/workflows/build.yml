@@ -90,8 +90,6 @@ jobs:
       with:
         name: macos-builds
         path: |
-          dist/*x64*.dmg
-          dist/*x64*.zip
           dist/*arm64*.dmg
           dist/*arm64*.zip
         if-no-files-found: warn
