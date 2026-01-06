@@ -77,6 +77,8 @@ const VideoPage: React.FC<{
     status = 'waiting';
   } else if (videoAria.status === 'error' || audioAria.status === 'error') {
     status = 'error';
+  } else if (videoAria.status === 'complete' && audioAria.status === 'complete') {
+    status = 'complete'; // 修复：当音视频都下载完成时显示完成状态
   } else {
     status = 'active';
   }

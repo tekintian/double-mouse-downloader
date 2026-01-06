@@ -6,6 +6,7 @@ interface Config {
     videoQuality: number;
     videoCodec: string;
     audioQuality: number;
+    saveAudio: boolean;
   };
   proxy: {
     enable: boolean;

@@ -53,6 +53,52 @@ const fns = {
       });
     });
   },
+  async extractAudio(
+    videoPath: string,
+    audioPath: string
+  ): Promise<{
+    stdout: string;
+    stderr: string;
+  }> {
+    const ffmpegPath = getBinPath('ffmpeg');
+
+    const sp = cp.spawn(ffmpegPath, [
+      '-i',
+      videoPath,
+      '-vn',
+      '-acodec',
+      'copy',
+      audioPath,
+      '-y',
+    ]);
+
+    return new Promise((resolve, reject) => {
+      let stdout = '';
+      let stderr = '';
+
+      sp.stdout.on('data', (chunk: Buffer) => {
+        stdout += chunk.toString('utf-8');
+      });
+
+      sp.stderr.on('data', (chunk: Buffer) => {
+        stderr += chunk.toString('utf-8');
+      });
+
+      sp.on('exit', (code) => {
+        if (code !== 0) {
+          // error
+          reject(`退出码：${code}，stderr：${stderr}`);
+        } else {
+          resolve({ stdout, stderr });
+        }
+      });
+
+      sp.on('error', (err) => {
+        console.error(err);
+        reject(err.message);
+      });
+    });
+  },
 };
 
 const ffmpegService: IService<typeof fns> = {

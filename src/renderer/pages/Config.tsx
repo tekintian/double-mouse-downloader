@@ -291,6 +291,13 @@ const ConfigPage: React.FC<ConfigPageProps> = () => {
               />
             </Form.Item>
           </div>
+          <Form.Item
+            name="saveAudio"
+            label="保存独立音频"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
         </Form>
         <Form
           aria-label="代理设置"

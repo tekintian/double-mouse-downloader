@@ -127,7 +127,7 @@ npm run dist -- --linux
 
 
 # 打包 macOS x64 架构，不发布到 GitHub Releases，压缩方式为 store，不签名
-rm -rf dist build && DEBUG=electron-builder && npm run dist -- --mac --x64 --publish never --config.compression=store --config.mac.identity=null
+rm -rf dist build && npm run dist -- --mac --x64 --publish never --config.compression=store --config.mac.identity=null
 ```
 
 ## 技术栈
