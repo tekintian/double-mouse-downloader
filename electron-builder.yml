@@ -15,9 +15,12 @@ compression: maximum
 # 文件配置
 files:
   - build/**/*
-  - bin/**/*
-  - node_modules/**/*
   - package.json
+
+# 额外资源文件（会放在 Contents/Resources）
+extraResources:
+  - from: ./bin
+    to: ./bin
 
 # 排除不必要的文件
 fileAssociations:
@@ -25,8 +28,7 @@ fileAssociations:
 
 # ASAR配置
 asar: true
-asarUnpack:
-  - bin/**/*
+asarUnpack: []
 
 # 产物文件名格式
 artifactName: "${name}-${version}-${arch}.${ext}"
@@ -40,10 +42,14 @@ mac:
     - x64
     - arm64
   minimumSystemVersion: '10.13'
-  hardenedRuntime: true
+  hardenedRuntime: false
+  identity: null
   entitlements: entitlements.plist
   entitlementsInherit: entitlements.plist
   artifactName: "${name}-${version}-${arch}.${ext}"
+  extendInfo:
+    NSDocumentsFolderUsageDescription: 应用需要访问文档文件夹来保存下载的视频
+    NSDownloadsFolderUsageDescription: 应用需要访问下载文件夹来保存视频
 
 # Windows配置
 win:
