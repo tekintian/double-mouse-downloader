@@ -21,7 +21,7 @@
     "prepare": "husky install"
   },
   "keywords": [],
-  "author": "MoyuScript <i@moyu.moe>",
+  "author": "tekintian <tekintian@gmail.com>",
   "license": "GPL-3.0-or-later",
   "lint-staged": {
     "*.{ts,tsx,js,css,less,html,yml,json}": [
@@ -31,8 +31,8 @@
       "eslint --fix"
     ]
   },
-  "homepage": "https://github.com/MoyuScript/double-mouse-downloader",
-  "repository": "https://github.com/MoyuScript/double-mouse-downloader",
+  "homepage": "https://github.com/tekintian/double-mouse-downloader",
+  "repository": "https://github.com/tekintian/double-mouse-downloader",
   "devDependencies": {
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
@@ -94,17 +94,18 @@
     },
     "files": [
       "build/**/*",
-      "package.json"
+      "!node_modules/.cache",
+      "!node_modules/.bin",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/**/test/**",
+      "!**/node_modules/**/docs/**"
     ],
     "extraResources": [
       {
-        "from": "bin",
-        "to": "bin"
+        "from": "bin/${platform}/${arch}",
+        "to": "bin/${platform}/${arch}"
       }
     ],
-    "icon": "build-resources/icon.png",
-    "mac": {
-      "icon": "build-resources/icon.png"
-    }
+    "icon": "build-resources/icon.png"
   }
 }
