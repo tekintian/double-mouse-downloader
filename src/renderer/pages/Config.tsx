@@ -380,14 +380,15 @@ const ConfigPage: React.FC<ConfigPageProps> = () => {
         <section className={styles.about}>
           <h1>关于</h1>
           <p>
-            作者：
+            当前Fork维护者： <OuterLink href="https://dev.tekin.cn/">@tekintian</OuterLink>
+            （E-mail: <OuterLink href="mailto:tekintian@gmail.com">tekintian@gmail.com</OuterLink>
+            ），
+            原项目维护者：
             <OuterLink href="https://www.moyu.moe/">@MoyuScript</OuterLink>
-            （E-mail: <OuterLink href="mailto:i@moyu.moe">i@moyu.moe</OuterLink>
-            ）
           </p>
           <p>
             源代码：
-            <OuterLink href="https://github.com/MoyuScript/double-mouse-downloader">
+            <OuterLink href="https://github.com/tekintian/double-mouse-downloader">
               GitHub
             </OuterLink>
           </p>

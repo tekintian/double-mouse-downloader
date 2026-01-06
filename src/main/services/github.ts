@@ -6,7 +6,7 @@ const fns = {
     const axios = await getAxiosInstance();
     return (
       await axios(
-        'https://api.github.com/repos/MoyuScript/double-mouse-downloader/releases'
+        'https://api.github.com/repos/tekintian/double-mouse-downloader/releases'
       )
     ).data;
   },

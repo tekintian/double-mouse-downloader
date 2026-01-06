@@ -44,34 +44,28 @@ jobs:
 
     - name: Package application (Windows)
       if: matrix.os == 'windows-latest'
-      run: yarn run dist
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: yarn run dist --publish never
 
     - name: Package application (macOS)
       if: matrix.os == 'macos-latest'
       run: |
         # 先构建 x64 架构
-        electron-builder --mac --x64
+        electron-builder --mac --x64 --publish never
         # 清理临时文件
         rm -rf dist/mac
         # 构建 arm64 架构
-        electron-builder --mac --arm64
+        electron-builder --mac --arm64 --publish never
         # 清理临时文件
         rm -rf dist/mac
         # 构建通用二进制文件 (universal)
-        electron-builder --mac --universal
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        electron-builder --mac --universal --publish never
 
     - name: Package application (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
         sudo apt-get install -y rpm libarchive-tools
-        yarn run dist
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        yarn run dist --publish never
 
     - name: Upload Windows artifacts
       if: matrix.os == 'windows-latest'

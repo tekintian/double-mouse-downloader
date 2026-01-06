@@ -1,5 +1,10 @@
 appId: 'moe.moyu.double-mouse-downloader'
 productName: 鼠鼠下载器
+publish:
+  provider: github
+  owner: tekintian
+  repo: double-mouse-downloader
+  releaseType: release
 
 win:
   target:
