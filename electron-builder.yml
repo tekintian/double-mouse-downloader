@@ -31,18 +31,10 @@ asar: true
 asarUnpack:
   - "./bin/${platform}/${arch}/*"  # 二进制文件不打包到 asar 中
 
-# 配置构建产物的文件名格式，确保包含架构信息
+# 为所有平台配置构建产物的文件名格式
 artifactName: "${name}-${version}-${arch}.${ext}"
 
-win:
-  target:
-    - target: nsis
-      arch:
-        - x64
-    - target: 7z
-      arch:
-        - x64
-
+# 为mac平台单独配置，确保覆盖默认设置
 mac:
   target:
     - target: dmg
@@ -57,6 +49,19 @@ mac:
   hardenedRuntime: true
   entitlements: entitlements.plist
   entitlementsInherit: entitlements.plist
+  # 确保mac平台也使用相同的文件名格式
+  artifactName: "${name}-${version}-${arch}.${ext}"
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: 7z
+      arch:
+        - x64
+  # 确保windows平台也使用相同的文件名格式
+  artifactName: "${name}-${version}-${arch}.${ext}"
 
 directories:
   buildResources: ./build-resources
