@@ -102,16 +102,8 @@
     ],
     "extraResources": [
       {
-        "from": "bin/win32/x64",
-        "to": "bin/win32/x64"
-      },
-      {
-        "from": "bin/darwin/x64",
-        "to": "bin/darwin/x64"
-      },
-      {
-        "from": "bin/darwin/arm64",
-        "to": "bin/darwin/arm64"
+        "from": "bin/${platform}/${arch}",
+        "to": "bin/${platform}/${arch}"
       }
     ],
     "icon": "build-resources/icon.png"
