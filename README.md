@@ -93,7 +93,15 @@ const binaries = {
 同时当前系统还需要安装:
  - [FFmpeg](https://ffmpeg.org/download.html) 。如果未安装，请根据您的操作系统从 [FFmpeg 官方网站](https://ffmpeg.org/download.html) 下载并安装。
 
- - [Aria2](https://aria2.github.io/) 。如果未安装，请根据您的操作系统从 [Aria2 官方网站](https://aria2.github.io/) 下载并安装。
+ windows 平台预构建版本下载：
+https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip
+https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-8.0.1-essentials_build.7z
+https://github.com/GyanD/codexffmpeg/releases?page=52
+随意下载一个即可，下载后将ffmpeg.exe文件拷贝到bin目录即可
+windows安装后的路径 C:\Users\yourname\AppData\Local\Programs\double-mouse-downloader\resources\bin\win32\x64
+
+ - [Aria2](https://aria2.github.io/) 。如果未安装，请根据您的操作系统从 [Aria2 官方网站](https://github.com/aria2/aria2/releases) 下载并安装。
+ https://github.com/aria2/aria2/releases/download/release-1.37.0/aria2-1.37.0-win-64bit-build1.zip
 
  - Electron v19.0.3
 

@@ -19,12 +19,8 @@ files:
 
 # 额外资源文件（会放在 Contents/Resources）
 extraResources:
-  - from: ./bin/win32/x64
-    to: ./bin/win32/x64
-  - from: ./bin/darwin/x64
-    to: ./bin/darwin/x64
-  - from: ./bin/darwin/arm64
-    to: ./bin/darwin/arm64
+  - from: ./bin/${platform}/${arch}
+    to: ./bin/${platform}/${arch}
 
 # 排除不必要的文件
 fileAssociations:
@@ -67,6 +63,17 @@ win:
   arch:
     - x64
   artifactName: "${name}-${version}-${arch}.${ext}"
+
+# Linux配置
+linux:
+  target:
+    - AppImage
+    - deb
+    - rpm
+  arch:
+    - x64
+  artifactName: "${name}-${version}-${arch}.${ext}"
+  category: Video
 
 # 构建资源目录
 directories:
