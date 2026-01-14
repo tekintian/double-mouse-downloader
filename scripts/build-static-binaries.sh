@@ -129,8 +129,10 @@ build_ffmpeg() {
             # Linux 使用原生编译
             if [ "$ARCH" = "arm64" ]; then
                 FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=aarch64"
+            else
+                # x86_64 禁用汇编优化以避免编译器兼容性问题
+                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --disable-asm --disable-inline-asm"
             fi
-            # x86_64 使用自动检测，不添加额外标志
             ;;
         win32)
             # Windows 需要特殊的配置，这里使用预编译的静态版本
