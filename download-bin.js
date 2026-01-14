@@ -78,10 +78,10 @@ function setBinariesPermissions(dirPath) {
 loadEnv();
 
 // 配置参数 - 从环境变量获取BIN_URL
-const BIN_URL = process.env.BIN_DOWNLOAD_URL || 'https://github.com/tekintian/double-mouse-downloader/releases/download/v1/win-darwin-bin.zip';
+const BIN_URL = process.env.BIN_DOWNLOAD_URL || 'https://github.com/tekintian/double-mouse-downloader/releases/download/v1/bin.zip';
 
 const BIN_DIR = path.join(__dirname, 'bin');
-const TEMP_ZIP = path.join(__dirname, 'win-darwin-bin.zip');
+const TEMP_ZIP = path.join(__dirname, 'bin.zip');
 
 async function downloadBin() {
   console.log('开始下载bin目录...');

@@ -5,3 +5,8 @@ node_modules
 bin/
 .DS_Store
 /package-lock.json
+# 构建临时文件
+.build-temp/
+*.zip
+*.tar.gz
+

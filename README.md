@@ -36,10 +36,12 @@
 
 鼠鼠下载器采用了先进的智能化构建系统，确保在各种平台上的稳定运行和最佳性能：
 
-### 自动依赖管理
-- 自动检测并安装所需依赖（Aria2、FFmpeg）
-- 跨平台依赖适配，Windows、macOS、Linux 均有专门处理
-- 使用 `check-binaries.js` 脚本智能检测和复制二进制文件
+### 静态链接二进制文件
+- **静态编译**：ffmpeg 和 aria2 以静态链接方式构建，无系统依赖
+- **跨平台兼容**：构建的二进制文件可在任何相同架构的系统上运行
+- **自动化构建**：CI/CD 自动编译所有平台的静态二进制文件
+
+详细的构建指南请查看 [docs/BUILDING_BINARIES.md](./docs/BUILDING_BINARIES.md)
 
 ### 多平台构建矩阵
 - **Windows**：x64 架构，支持 NSIS 安装包和 7z 压缩包
@@ -52,20 +54,16 @@
 - 多平台并行构建，提高效率
 - 自动打包和产物上传
 
-### 智能二进制文件管理
-```javascript
-// 自动检测平台和架构
-const platform = process.platform;
-const arch = process.arch;
+### 构建命令
+```bash
+# 下载预编译的二进制文件 (首次构建或需要更新时执行)
+npm run download-bin
 
-// 智能选择二进制文件名
-const binaries = {
-  aria2c: platform === 'win32' ? 'aria2c.exe' : 'aria2c',
-  ffmpeg: platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg'
-};
+# 构建应用 (会自动先下载二进制文件)
+npm run build
 
-// 自动查找和复制二进制文件到项目目录
-// ...
+# 打包应用
+npm run dist
 ```
 
 ### 产物管理
@@ -89,30 +87,15 @@ const binaries = {
 
 ### 安装依赖
 
-> 请确保已安装 Node.js 16.20 和 Yarn 包管理器 。如果未安装，请根据您的操作系统从 [Node.js 官方网站](https://nodejs.org/) 下载并安装。
-同时当前系统还需要安装:
- - [FFmpeg](https://ffmpeg.org/download.html) 。如果未安装，请根据您的操作系统从 [FFmpeg 官方网站](https://ffmpeg.org/download.html) 下载并安装。
-
-linux 平台预构建版本下载：
-https://www.johnvansickle.com/ffmpeg/old-releases/
-
- windows 平台预构建版本下载：
-https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip
-https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-8.0.1-essentials_build.7z
-https://github.com/GyanD/codexffmpeg/releases?page=52
-随意下载一个即可，下载后将ffmpeg.exe文件拷贝到bin目录即可
-windows安装后的路径 C:\Users\yourname\AppData\Local\Programs\double-mouse-downloader\resources\bin\win32\x64
-
- - [Aria2](https://aria2.github.io/) 。如果未安装，请根据您的操作系统从 [Aria2 官方网站](https://github.com/aria2/aria2/releases) 下载并安装。
- https://github.com/aria2/aria2/releases/download/release-1.37.0/aria2-1.37.0-win-64bit-build1.zip
-
- - Electron v19.0.3
+> 请确保已安装 Node.js 16.20 和 Yarn 包管理器。如果未安装，请根据您的操作系统从 [Node.js 官方网站](https://nodejs.org/) 下载并安装。
 
 ```bash
 # node 版本 16.20.x
 # yarn 版本: 1.22.x
 yarn install --frozen-lockfile
 ```
+
+> **注意**：项目使用静态编译的 ffmpeg 和 aria2，无需在系统上单独安装。构建时会自动处理这些依赖。
 
 ### 开发模式
 ```bash
