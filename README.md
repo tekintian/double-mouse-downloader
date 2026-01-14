@@ -93,6 +93,9 @@ const binaries = {
 同时当前系统还需要安装:
  - [FFmpeg](https://ffmpeg.org/download.html) 。如果未安装，请根据您的操作系统从 [FFmpeg 官方网站](https://ffmpeg.org/download.html) 下载并安装。
 
+linux 平台预构建版本下载：
+https://www.johnvansickle.com/ffmpeg/old-releases/
+
  windows 平台预构建版本下载：
 https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip
 https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-8.0.1-essentials_build.7z
