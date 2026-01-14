@@ -40,6 +40,7 @@ npm run build
 
 ### 修改文件
 - `.github/workflows/build.yml` - 添加下载预编译二进制文件步骤
+- `.github/workflows/build-static-binaries.yml` - 新增手动构建静态二进制文件的 workflow
 - `package.json` - `build` 命令包含 `download-bin`
 - `README.md` - 更新构建说明
 - `.gitignore` - `bin/` 目录已排除
@@ -47,16 +48,25 @@ npm run build
 
 ### 二进制文件来源
 - **GitHub Releases**: https://github.com/tekintian/double-mouse-downloader/releases/tag/v1
-- **压缩包**: `bin.zip` 包含 macOS 和 Windows 的静态二进制文件
+- **压缩包**: `static-binaries-all-platforms.zip` 包含所有平台的静态二进制文件
+- **新增**: `.github/workflows/build-static-binaries.yml` - 手动触发构建静态二进制文件
 
 ## CI/CD 行为
 
-GitHub Actions 构建流程:
-1. 下载预编译的二进制文件
+### 1. 日常构建 (.github/workflows/build.yml)
+
+每次推送代码到 `dev` 分支时:
+1. 下载预编译的二进制文件 (`npm run download-bin`)
 2. 构建应用
 3. 打包发布
 
-每次构建都会下载最新的二进制文件,确保版本一致。
+### 2. 静态二进制文件构建 (.github/workflows/build-static-binaries.yml)
+
+需要更新二进制文件时,手动触发:
+1. 支持选择特定平台或全部平台
+2. 可选择是否上传到 GitHub Releases
+3. 自动打包为 `static-binaries-all-platforms.zip` 并上传
+4. 各平台产物保留 7 天作为 artifacts
 
 ## 技术细节
 
@@ -81,8 +91,14 @@ powershell -ExecutionPolicy Bypass -File scripts\build-static-binaries.ps1
 
 ### 更新预编译文件
 
+1. 在 GitHub 手动触发 "Build Static Binaries" workflow
+2. 选择需要构建的平台
+3. 勾选 "Upload to GitHub Releases"
+4. 等待构建完成,自动上传
+
+或手动操作:
 1. 手动编译或下载最新版本
-2. 组织文件结构并压缩为 `bin.zip`
+2. 组织文件结构并压缩为 `static-binaries-all-platforms.zip`
 3. 上传到 GitHub Releases tag v1
 4. 更新 `download-bin.js` 中的下载 URL
 

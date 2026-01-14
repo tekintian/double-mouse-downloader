@@ -21,7 +21,7 @@
 项目使用预编译的静态二进制文件,这些文件已经手动构建并上传到 GitHub Releases:
 
 - **下载地址**: https://github.com/tekintian/double-mouse-downloader/releases/tag/v1
-- **压缩包**: `bin.zip` (包含 macOS 和 Windows 的静态二进制文件)
+- **压缩包**: `static-binaries-all-platforms.zip` (包含所有平台的静态二进制文件)
 
 `bin/` 目录已被 `.gitignore` 排除,不纳入版本控制。
 
@@ -35,7 +35,7 @@ npm run download-bin
 ```
 
 这将:
-1. 从 GitHub Releases 下载 `bin.zip`
+1. 从 GitHub Releases 下载 `static-binaries-all-platforms.zip`
 2. 解压到 `bin/` 目录
 3. 设置正确的执行权限
 
@@ -120,19 +120,43 @@ powershell -ExecutionPolicy Bypass -File scripts\build-static-binaries.ps1
    ├── darwin/arm64/ffmpeg, aria2c
    └── win32/x64/ffmpeg.exe, aria2c.exe
    ```
-3. 压缩为 `bin.zip`
+3. 压缩为 `static-binaries-all-platforms.zip`
 4. 上传到 GitHub Releases tag v1
 5. 更新 `download-bin.js` 中的下载 URL (如需修改)
 
 ## 在 CI/CD 中使用
 
-项目已配置 GitHub Actions 自动下载预编译的二进制文件,每次推送代码到 `dev` 分支时会执行 `npm run download-bin`:
+项目使用两种 CI/CD 方案:
 
+### 1. 自动下载预编译二进制文件 (日常构建)
+
+`.github/workflows/build.yml` 配置为自动下载预编译的二进制文件:
+
+- 每次推送代码到 `dev` 分支时执行
 - 自动从 GitHub Releases 下载最新的静态二进制文件
 - 确保构建环境总有正确的二进制文件
 - 无需在 CI 环境中编译,节省时间和资源
 
-查看 `.github/workflows/build.yml` 了解详细配置。
+### 2. 手动构建静态二进制文件 (更新时)
+
+`.github/workflows/build-static-binaries.yml` 配置为手动触发构建:
+
+**使用方法:**
+1. 进入 GitHub Actions 页面
+2. 选择 "Build Static Binaries" workflow
+3. 点击 "Run workflow" 按钮
+4. 选择要构建的平台 (可以多选):
+   - ☑ Build Windows binaries
+   - ☑ Build macOS ARM64 binaries
+   - ☑ Build macOS Intel binaries
+   - ☑ Build Linux binaries
+5. 是否上传到 GitHub Releases: 勾选则自动上传
+6. Release tag: 默认为 `v1`,根据需要修改
+7. 点击 "Run workflow" 开始构建
+
+**构建产物:**
+- 各平台的二进制文件会上传为 artifacts (保留 7 天)
+- 如果选择上传到 Releases,会自动打包为 `static-binaries-all-platforms.zip` 并上传到指定 tag
 
 ## 手动编译二进制文件 (可选)
 
@@ -183,7 +207,7 @@ bin/
 
 ### 下载失败
 
-检查网络连接,或验证 GitHub Releases 是否存在 `bin.zip`:
+检查网络连接,或验证 GitHub Releases 是否存在 `static-binaries-all-platforms.zip`:
 - Releases 地址: https://github.com/tekintian/double-mouse-downloader/releases/tag/v1
 
 ### macOS/Linux: 编译失败
