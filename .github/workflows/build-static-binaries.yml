@@ -158,9 +158,13 @@ jobs:
 
   # 合并并打包所有二进制文件
   package:
-    needs: [build_windows, build_macos_arm64, build_macos_x64, build_linux]
+    # 只有在选择了上传到 Release 时才运行
     runs-on: ubuntu-latest
-    if: github.event.inputs.upload_to_release == 'true'
+    if: |
+      github.event.inputs.upload_to_release == 'true' &&
+      (inputs.build_windows == 'true' || inputs.build_macos_arm64 == 'true' ||
+       inputs.build_macos_x64 == 'true' || inputs.build_linux == 'true')
+    needs: [build_windows, build_macos_arm64, build_macos_x64, build_linux]
 
     steps:
     - name: Checkout code
