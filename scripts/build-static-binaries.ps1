@@ -14,28 +14,31 @@ function Write-ColorOutput($ForegroundColor) {
 }
 
 function Log-Info {
-    Write-ColorOutput Green "[INFO] $args"
+    param([string]$Message)
+    Write-ColorOutput Green "[INFO] $Message"
 }
 
 function Log-Warn {
-    Write-ColorOutput Yellow "[WARN] $args"
+    param([string]$Message)
+    Write-ColorOutput Yellow "[WARN] $Message"
 }
 
 function Log-Error {
-    Write-ColorOutput Red "[ERROR] $args"
+    param([string]$Message)
+    Write-ColorOutput Red "[ERROR] $Message"
 }
 
 # 获取架构
 $ARCH = if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") { "x64" } else { "ia32" }
 
-Log-Info "平台: win32"
-Log-Info "架构: $ARCH"
+Log-Info -Message "平台: win32"
+Log-Info -Message "架构: $ARCH"
 
 # 输出目录
 $OUTPUT_DIR = Join-Path $PSScriptRoot "..\bin\win32\$ARCH"
 New-Item -ItemType Directory -Force -Path $OUTPUT_DIR | Out-Null
 
-Log-Info "输出目录: $OUTPUT_DIR"
+Log-Info -Message "输出目录: $OUTPUT_DIR"
 
 # 临时下载目录
 $TEMP_DIR = Join-Path $env:TEMP "double-mouse-build-temp"
@@ -52,7 +55,7 @@ function Download-Extract {
         [string]$TargetFile
     )
 
-    Log-Info "下载 $Name..."
+    Log-Info -Message "下载 $Name..."
 
     $zipFile = Join-Path $TEMP_DIR "$Name.zip"
 
@@ -60,12 +63,12 @@ function Download-Extract {
         try {
             Invoke-WebRequest -Uri $Url -OutFile $zipFile -UseBasicParsing
         } catch {
-            Log-Error "下载 $Name 失败: $_"
+            Log-Error -Message "下载 $Name 失败: $_"
             exit 1
         }
     }
 
-    Log-Info "解压 $Name..."
+    Log-Info -Message "解压 $Name..."
 
     # 使用 PowerShell 5.1+ 的 Expand-Archive
     Expand-Archive -Path $zipFile -DestinationPath $TEMP_DIR -Force
@@ -74,20 +77,20 @@ function Download-Extract {
     $extractedFile = Get-ChildItem -Path $TEMP_DIR -Recurse -Filter $Pattern | Select-Object -First 1
 
     if (-not $extractedFile) {
-        Log-Error "未找到 $Pattern"
+        Log-Error -Message "未找到 $Pattern"
         exit 1
     }
 
     # 复制到输出目录
     Copy-Item -Path $extractedFile.FullName -Destination $TargetFile -Force
 
-    Log-Info "$Name 已复制到 $TargetFile"
+    Log-Info -Message "$Name 已复制到 $TargetFile"
 }
 
 # ============================================
 # 下载 ffmpeg
 # ============================================
-Log-Info "=== 下载 ffmpeg ==="
+Log-Info -Message "=== 下载 ffmpeg ==="
 
 # 使用 gyan.dev 的预编译版本
 # 最新版本链接需要手动更新
@@ -99,7 +102,7 @@ $FFmpegUrl = $FFmpegVersions["6.0"]
 $TargetFFmpeg = Join-Path $OUTPUT_DIR "ffmpeg.exe"
 
 if (Test-Path $TargetFFmpeg) {
-    Log-Info "ffmpeg 已存在，跳过下载"
+    Log-Info -Message "ffmpeg 已存在，跳过下载"
 } else {
     Download-Extract -Name "ffmpeg" -Url $FFmpegUrl -Pattern "ffmpeg.exe" -TargetFile $TargetFFmpeg
 }
@@ -107,7 +110,7 @@ if (Test-Path $TargetFFmpeg) {
 # ============================================
 # 下载 aria2
 # ============================================
-Log-Info "=== 下载 aria2 ==="
+Log-Info -Message "=== 下载 aria2 ==="
 
 # aria2 官方预编译版本
 $Aria2Versions = @{
@@ -118,7 +121,7 @@ $Aria2Url = $Aria2Versions["1.37.0"]
 $TargetAria2 = Join-Path $OUTPUT_DIR "aria2c.exe"
 
 if (Test-Path $TargetAria2) {
-    Log-Info "aria2 已存在，跳过下载"
+    Log-Info -Message "aria2 已存在，跳过下载"
 } else {
     Download-Extract -Name "aria2" -Url $Aria2Url -Pattern "aria2c.exe" -TargetFile $TargetAria2
 }
@@ -131,11 +134,12 @@ Remove-Item -Path $TEMP_DIR -Recurse -Force -ErrorAction SilentlyContinue
 # ============================================
 # 显示结果
 # ============================================
-Log-Info "=== 构建完成 ==="
-Log-Info "输出目录: $OUTPUT_DIR"
-Log-Info "包含的文件:"
+Log-Info -Message "=== 构建完成 ==="
+Log-Info -Message "输出目录: $OUTPUT_DIR"
+Log-Info -Message "包含的文件:"
 
-Get-ChildItem -Path $OUTPUT_DIR -File | ForEach-Object {
-    $size = [math]::Round($_.Length / 1MB, 2)
-    Log-Info "$($_.Name) : $size MB"
+$files = Get-ChildItem -Path $OUTPUT_DIR -File
+foreach ($file in $files) {
+    $size = [math]::Round($file.Length / 1MB, 2)
+    Log-Info -Message "$($file.Name) : $size MB"
 }

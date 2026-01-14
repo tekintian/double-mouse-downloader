@@ -126,12 +126,11 @@ build_ffmpeg() {
             fi
             ;;
         linux)
-            FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --enable-cross-compile"
+            # Linux 使用原生编译
             if [ "$ARCH" = "arm64" ]; then
-                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=aarch64 --target-os=linux"
-            else
-                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=x86_64 --target-os=linux"
+                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=aarch64"
             fi
+            # x86_64 使用自动检测，不添加额外标志
             ;;
         win32)
             # Windows 需要特殊的配置，这里使用预编译的静态版本
@@ -141,7 +140,8 @@ build_ffmpeg() {
             ;;
     esac
 
-    # 最小化配置
+    # 最小化配置 - 不使用 libx264 以避免编译复杂性
+    # 禁用所有可能链接外部库的选项
     FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS \
         --disable-doc \
         --disable-htmlpages \
@@ -149,7 +149,6 @@ build_ffmpeg() {
         --disable-podpages \
         --disable-txtpages \
         --disable-debug \
-        --disable-programs \
         --disable-avdevice \
         --disable-swresample \
         --disable-swscale \
@@ -166,9 +165,28 @@ build_ffmpeg() {
         --enable-parser=aac \
         --enable-parser=h264 \
         --enable-parser=hevc \
-        --enable-protocol=file,http,https \
-        --enable-libx264 \
-        --enable-gpl"
+        --enable-protocol=file \
+        --disable-indevs \
+        --disable-outdevs \
+        --disable-filters \
+        --disable-hwaccels \
+        --disable-dxva2 \
+        --disable-vaapi \
+        --disable-vdpau \
+        --disable-videotoolbox \
+        --disable-cuda \
+        --disable-cuvid \
+        --disable-nvenc \
+        --disable-ffnvcodec \
+        --disable-libxcb \
+        --disable-libx264 \
+        --disable-libx265 \
+        --disable-libvpx \
+        --disable-libvorbis \
+        --disable-libopus \
+        --disable-openssl \
+        --disable-sdl2 \
+        --disable-xlib"
 
     log_info "配置 ffmpeg..."
     log_info "配置选项: $FFmpeg_CONFIG_FLAGS"
@@ -208,8 +226,12 @@ build_aria2() {
 
     cd "$Aria2_DIR"
 
-    # 配置选项 - 静态编译
-    local Aria2_CONFIG_FLAGS="--enable-static --disable-shared --without-libxml2 --without-libexpat --disable-ssl"
+    # 配置选项 - 最小化静态编译，禁用所有外部依赖
+    local Aria2_CONFIG_FLAGS="--enable-static --disable-shared \
+        --without-libxml2 --without-libexpat --disable-ssl \
+        --without-sqlite3 --without-libssh2 --without-cares \
+        --without-libgcrypt --without-libnettle --without-gnutls \
+        --without-openssl --without-libiconv --without-zlib"
 
     # 平台特定配置
     case "$PLATFORM" in
@@ -243,7 +265,7 @@ build_aria2() {
     chmod +x "$OUTPUT_DIR/aria2c"
 
     log_info "aria2 编译完成: $OUTPUT_DIR/aria2c"
-    
+
     cd ..
 }
 
