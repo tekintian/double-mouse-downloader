@@ -2,3 +2,5 @@ node_modules
 /dist
 /build
 *.log
+bin/
+.DS_Store
