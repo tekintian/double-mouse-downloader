@@ -13,18 +13,15 @@ function Write-ColorOutput($ForegroundColor) {
     $host.UI.RawUI.ForegroundColor = $fc
 }
 
-function Log-Info {
-    param([string]$Message)
+function Log-Info([string]$Message) {
     Write-ColorOutput Green "[INFO] $Message"
 }
 
-function Log-Warn {
-    param([string]$Message)
+function Log-Warn([string]$Message) {
     Write-ColorOutput Yellow "[WARN] $Message"
 }
 
-function Log-Error {
-    param([string]$Message)
+function Log-Error([string]$Message) {
     Write-ColorOutput Red "[ERROR] $Message"
 }
 
@@ -55,7 +52,7 @@ function Download-Extract {
         [string]$TargetFile
     )
 
-    Log-Info -Message "下载 $Name..."
+    Log-Info "下载 $Name..."
 
     $zipFile = Join-Path $TEMP_DIR "$Name.zip"
 
@@ -63,12 +60,12 @@ function Download-Extract {
         try {
             Invoke-WebRequest -Uri $Url -OutFile $zipFile -UseBasicParsing
         } catch {
-            Log-Error -Message "下载 $Name 失败: $_"
+            Log-Error "下载 $Name 失败: $_"
             exit 1
         }
     }
 
-    Log-Info -Message "解压 $Name..."
+    Log-Info "解压 $Name..."
 
     # 使用 PowerShell 5.1+ 的 Expand-Archive
     Expand-Archive -Path $zipFile -DestinationPath $TEMP_DIR -Force
@@ -77,14 +74,14 @@ function Download-Extract {
     $extractedFile = Get-ChildItem -Path $TEMP_DIR -Recurse -Filter $Pattern | Select-Object -First 1
 
     if (-not $extractedFile) {
-        Log-Error -Message "未找到 $Pattern"
+        Log-Error "未找到 $Pattern"
         exit 1
     }
 
     # 复制到输出目录
     Copy-Item -Path $extractedFile.FullName -Destination $TargetFile -Force
 
-    Log-Info -Message "$Name 已复制到 $TargetFile"
+    Log-Info "$Name 已复制到 $TargetFile"
 }
 
 # ============================================
@@ -102,7 +99,7 @@ $FFmpegUrl = $FFmpegVersions["6.0"]
 $TargetFFmpeg = Join-Path $OUTPUT_DIR "ffmpeg.exe"
 
 if (Test-Path $TargetFFmpeg) {
-    Log-Info -Message "ffmpeg 已存在，跳过下载"
+    Log-Info "ffmpeg 已存在，跳过下载"
 } else {
     Download-Extract -Name "ffmpeg" -Url $FFmpegUrl -Pattern "ffmpeg.exe" -TargetFile $TargetFFmpeg
 }
@@ -121,7 +118,7 @@ $Aria2Url = $Aria2Versions["1.37.0"]
 $TargetAria2 = Join-Path $OUTPUT_DIR "aria2c.exe"
 
 if (Test-Path $TargetAria2) {
-    Log-Info -Message "aria2 已存在，跳过下载"
+    Log-Info "aria2 已存在，跳过下载"
 } else {
     Download-Extract -Name "aria2" -Url $Aria2Url -Pattern "aria2c.exe" -TargetFile $TargetAria2
 }
@@ -134,12 +131,12 @@ Remove-Item -Path $TEMP_DIR -Recurse -Force -ErrorAction SilentlyContinue
 # ============================================
 # 显示结果
 # ============================================
-Log-Info -Message "=== 构建完成 ==="
-Log-Info -Message "输出目录: $OUTPUT_DIR"
-Log-Info -Message "包含的文件:"
+Log-Info "=== 构建完成 ==="
+Log-Info "输出目录: $OUTPUT_DIR"
+Log-Info "包含的文件:"
 
 $files = Get-ChildItem -Path $OUTPUT_DIR -File
 foreach ($file in $files) {
     $size = [math]::Round($file.Length / 1MB, 2)
-    Log-Info -Message "$($file.Name) : $size MB"
+    Log-Info "$($file.Name) : $size MB"
 }

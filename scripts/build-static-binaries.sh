@@ -122,7 +122,9 @@ build_ffmpeg() {
         darwin)
             FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=${ARCH}"
             if [ "$ARCH" = "arm64" ]; then
-                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --enable-cross-compile --target-os=darwin --cc=clang --cxx=clang++ --extra-cflags='-target arm64-apple-macos10.13' --extra-ldflags='-target arm64-apple-macos10.13'"
+                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --enable-cross-compile --target-os=darwin --cc=clang --cxx=clang++"
+                export EXTRA_CFLAGS='-target arm64-apple-macos10.13'
+                export EXTRA_LDFLAGS='-target arm64-apple-macos10.13'
             fi
             ;;
         linux)
@@ -130,8 +132,8 @@ build_ffmpeg() {
             if [ "$ARCH" = "arm64" ]; then
                 FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=aarch64"
             else
-                # x86_64 正常配置
-                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=x86_64"
+                # x86_64 禁用汇编优化以避免编译器兼容性问题
+                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=x86_64 --disable-asm"
             fi
             ;;
         win32)
@@ -144,6 +146,8 @@ build_ffmpeg() {
 
     log_info "配置 ffmpeg..."
     log_info "配置选项: $FFmpeg_CONFIG_FLAGS"
+    [ -n "$EXTRA_CFLAGS" ] && log_info "EXTRA_CFLAGS: $EXTRA_CFLAGS"
+    [ -n "$EXTRA_LDFLAGS" ] && log_info "EXTRA_LDFLAGS: $EXTRA_LDFLAGS"
 
     ./configure $FFmpeg_CONFIG_FLAGS || {
         log_error "ffmpeg 配置失败"
@@ -194,7 +198,7 @@ build_aria2() {
     case "$PLATFORM" in
         darwin)
             if [ "$ARCH" = "arm64" ]; then
-                Aria2_CONFIG_FLAGS="$Aria2_CONFIG_FLAGS --host=aarch64-apple-darwin CC='clang -target arm64-apple-macos10.13' CXX='clang++ -target arm64-apple-macos10.13'"
+                Aria2_CONFIG_FLAGS="$Aria2_CONFIG_FLAGS --host=aarch64-apple-darwin"
             fi
             ;;
         linux)
@@ -205,6 +209,8 @@ build_aria2() {
     esac
 
     log_info "配置 aria2..."
+    [ -n "$EXTRA_CFLAGS" ] && log_info "EXTRA_CFLAGS: $EXTRA_CFLAGS"
+    [ -n "$EXTRA_LDFLAGS" ] && log_info "EXTRA_LDFLAGS: $EXTRA_LDFLAGS"
     ./configure $Aria2_CONFIG_FLAGS || {
         log_error "aria2 配置失败"
         exit 1
