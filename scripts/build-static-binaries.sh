@@ -188,7 +188,10 @@ build_ffmpeg() {
         --disable-libopus \
         --disable-openssl \
         --disable-sdl2 \
-        --disable-xlib"
+        --disable-xlib \
+        --enable-ffmpeg \
+        --disable-ffplay \
+        --disable-ffprobe"
 
     log_info "配置 ffmpeg..."
     log_info "配置选项: $FFmpeg_CONFIG_FLAGS"
