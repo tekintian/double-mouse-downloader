@@ -114,8 +114,8 @@ build_ffmpeg() {
 
     cd "$FFmpeg_DIR"
 
-    # 配置选项 - 参考 build.yml 中的 Linux 配置
-    local FFmpeg_CONFIG_FLAGS="--enable-gpl --enable-libx264 --disable-doc --disable-debug"
+    # 配置选项 - 静态链接，不使用外部库
+    local FFmpeg_CONFIG_FLAGS="--enable-static --disable-shared --disable-doc --disable-debug"
 
     # 平台特定配置
     case "$PLATFORM" in
@@ -128,11 +128,11 @@ build_ffmpeg() {
             fi
             ;;
         linux)
-            # Linux 使用原生编译，启用系统库
+            # Linux 使用静态链接
             if [ "$ARCH" = "arm64" ]; then
                 FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=aarch64"
             else
-                # x86_64 禁用汇编优化以避免编译器兼容性问题
+                # x86_64 禁用汇编优化
                 FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=x86_64 --disable-asm"
             fi
             ;;
@@ -191,8 +191,8 @@ build_aria2() {
 
     cd "$Aria2_DIR"
 
-    # 配置选项 - 参考 build.yml 中的 Linux 配置
-    local Aria2_CONFIG_FLAGS="--enable-static --disable-shared"
+    # 配置选项 - 静态链接，禁用所有外部库
+    local Aria2_CONFIG_FLAGS="--enable-static --disable-shared --without-libxml2 --without-libexpat --without-cares --without-libssh2 --without-gnutls --without-openssl --without-sqlite3"
 
     # 平台特定配置
     case "$PLATFORM" in

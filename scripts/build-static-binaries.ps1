@@ -28,14 +28,14 @@ function Log-Error([string]$Message) {
 # 获取架构
 $ARCH = if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") { "x64" } else { "ia32" }
 
-Log-Info -Message "平台: win32"
-Log-Info -Message "架构: $ARCH"
+Log-Info "平台: win32"
+Log-Info "架构: $ARCH"
 
 # 输出目录
 $OUTPUT_DIR = Join-Path $PSScriptRoot "..\bin\win32\$ARCH"
 New-Item -ItemType Directory -Force -Path $OUTPUT_DIR | Out-Null
 
-Log-Info -Message "输出目录: $OUTPUT_DIR"
+Log-Info "输出目录: $OUTPUT_DIR"
 
 # 临时下载目录
 $TEMP_DIR = Join-Path $env:TEMP "double-mouse-build-temp"
@@ -87,7 +87,7 @@ function Download-Extract {
 # ============================================
 # 下载 ffmpeg
 # ============================================
-Log-Info -Message "=== 下载 ffmpeg ==="
+Log-Info "=== 下载 ffmpeg ==="
 
 # 使用 gyan.dev 的预编译版本
 # 最新版本链接需要手动更新
@@ -107,7 +107,7 @@ if (Test-Path $TargetFFmpeg) {
 # ============================================
 # 下载 aria2
 # ============================================
-Log-Info -Message "=== 下载 aria2 ==="
+Log-Info "=== 下载 aria2 ==="
 
 # aria2 官方预编译版本
 $Aria2Versions = @{
