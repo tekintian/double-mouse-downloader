@@ -130,8 +130,8 @@ build_ffmpeg() {
             if [ "$ARCH" = "arm64" ]; then
                 FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=aarch64"
             else
-                # x86_64 禁用汇编优化以避免编译器兼容性问题
-                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --disable-asm --disable-inline-asm"
+                # x86_64 指定架构为 x86_64，不使用交叉编译
+                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=x86_64"
             fi
             ;;
         win32)
@@ -188,10 +188,7 @@ build_ffmpeg() {
         --disable-libopus \
         --disable-openssl \
         --disable-sdl2 \
-        --disable-xlib \
-        --enable-ffmpeg \
-        --disable-ffplay \
-        --disable-ffprobe"
+        --disable-xlib"
 
     log_info "配置 ffmpeg..."
     log_info "配置选项: $FFmpeg_CONFIG_FLAGS"
