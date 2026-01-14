@@ -114,8 +114,8 @@ build_ffmpeg() {
 
     cd "$FFmpeg_DIR"
 
-    # 配置选项 - 静态编译，只包含必要的组件
-    local FFmpeg_CONFIG_FLAGS="--enable-static --disable-shared"
+    # 配置选项 - 参考 build.yml 中的 Linux 配置
+    local FFmpeg_CONFIG_FLAGS="--enable-gpl --enable-libx264 --disable-doc --disable-debug"
 
     # 平台特定配置
     case "$PLATFORM" in
@@ -126,12 +126,12 @@ build_ffmpeg() {
             fi
             ;;
         linux)
-            # Linux 使用原生编译
+            # Linux 使用原生编译，启用系统库
             if [ "$ARCH" = "arm64" ]; then
                 FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=aarch64"
             else
-                # x86_64 禁用汇编优化以避免编译器兼容性问题
-                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=x86_64 --disable-asm --disable-inline-asm"
+                # x86_64 正常配置
+                FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS --arch=x86_64"
             fi
             ;;
         win32)
@@ -142,61 +142,12 @@ build_ffmpeg() {
             ;;
     esac
 
-    # 最小化配置 - 不使用 libx264 以避免编译复杂性
-    # 禁用所有可能链接外部库的选项
-    FFmpeg_CONFIG_FLAGS="$FFmpeg_CONFIG_FLAGS \
-        --disable-doc \
-        --disable-htmlpages \
-        --disable-manpages \
-        --disable-podpages \
-        --disable-txtpages \
-        --disable-debug \
-        --disable-avdevice \
-        --disable-swresample \
-        --disable-swscale \
-        --disable-postproc \
-        --disable-avfilter \
-        --disable-network \
-        --disable-encoders \
-        --disable-muxers \
-        --enable-encoder=aac \
-        --enable-muxer=mp4 \
-        --enable-muxer=webm \
-        --enable-decoders \
-        --enable-demuxers \
-        --enable-parser=aac \
-        --enable-parser=h264 \
-        --enable-parser=hevc \
-        --enable-protocol=file \
-        --disable-indevs \
-        --disable-outdevs \
-        --disable-filters \
-        --disable-hwaccels \
-        --disable-dxva2 \
-        --disable-vaapi \
-        --disable-vdpau \
-        --disable-videotoolbox \
-        --disable-cuda \
-        --disable-cuvid \
-        --disable-nvenc \
-        --disable-ffnvcodec \
-        --disable-libxcb \
-        --disable-libx264 \
-        --disable-libx265 \
-        --disable-libvpx \
-        --disable-libvorbis \
-        --disable-libopus \
-        --disable-openssl \
-        --disable-sdl2 \
-        --disable-xlib"
-
     log_info "配置 ffmpeg..."
     log_info "配置选项: $FFmpeg_CONFIG_FLAGS"
 
     ./configure $FFmpeg_CONFIG_FLAGS || {
         log_error "ffmpeg 配置失败"
-        log_warn "尝试使用默认配置..."
-        ./configure --enable-static --disable-shared --disable-doc
+        exit 1
     }
 
     log_info "编译 ffmpeg..."
@@ -204,6 +155,14 @@ build_ffmpeg() {
         log_error "ffmpeg 编译失败"
         exit 1
     }
+
+    # 检查 ffmpeg 可执行文件是否存在
+    if [ ! -f "ffmpeg" ]; then
+        log_error "ffmpeg 可执行文件未构建"
+        log_info "当前目录的文件:"
+        ls -lh ffmpeg* ffprobe* ffplay* 2>/dev/null || true
+        exit 1
+    fi
 
     # 复制 ffmpeg 可执行文件
     cp ffmpeg "$OUTPUT_DIR/"
@@ -228,12 +187,8 @@ build_aria2() {
 
     cd "$Aria2_DIR"
 
-    # 配置选项 - 最小化静态编译，禁用所有外部依赖
-    local Aria2_CONFIG_FLAGS="--enable-static --disable-shared \
-        --without-libxml2 --without-libexpat --disable-ssl \
-        --without-sqlite3 --without-libssh2 --without-cares \
-        --without-libgcrypt --without-libnettle --without-gnutls \
-        --without-openssl --without-libiconv --without-zlib"
+    # 配置选项 - 参考 build.yml 中的 Linux 配置
+    local Aria2_CONFIG_FLAGS="--enable-static --disable-shared"
 
     # 平台特定配置
     case "$PLATFORM" in
@@ -252,8 +207,7 @@ build_aria2() {
     log_info "配置 aria2..."
     ./configure $Aria2_CONFIG_FLAGS || {
         log_error "aria2 配置失败"
-        log_warn "尝试使用默认配置..."
-        ./configure --enable-static --disable-shared
+        exit 1
     }
 
     log_info "编译 aria2..."

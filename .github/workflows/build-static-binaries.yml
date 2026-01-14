@@ -34,9 +34,104 @@ on:
         default: 'v1'
 
 jobs:
-  # 暂时只构建 Linux，其他平台先跳过
+  build_windows:
+    runs-on: windows-latest
+    if: |
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.build_windows == 'true'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build static binaries
+      run: |
+        powershell -ExecutionPolicy Bypass -File scripts\build-static-binaries.ps1
+
+    - name: Verify binaries
+      run: |
+        echo "验证 Windows 二进制文件..."
+        ls -lh bin\win32\x64\ffmpeg.exe bin\win32\x64\aria2c.exe
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: binaries-windows-x64
+        path: bin/win32/x64/*
+        retention-days: 7
+
+  build_macos_arm64:
+    runs-on: macos-15
+    if: |
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.build_macos_arm64 == 'true'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install build dependencies
+      run: |
+        brew install autoconf automake libtool pkg-config yasm nasm
+        brew install x264
+        brew install libssh2 libxml2
+
+    - name: Build static binaries
+      run: |
+        chmod +x scripts/build-static-binaries.sh
+        scripts/build-static-binaries.sh darwin arm64
+
+    - name: Verify binaries
+      run: |
+        echo "验证 macOS ARM64 二进制文件..."
+        ls -lh bin/darwin/arm64/ffmpeg bin/darwin/arm64/aria2c
+        file bin/darwin/arm64/ffmpeg bin/darwin/arm64/aria2c
+        otool -L bin/darwin/arm64/ffmpeg bin/darwin/arm64/aria2c || true
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: binaries-macos-arm64
+        path: bin/darwin/arm64/*
+        retention-days: 7
+
+  build_macos_x64:
+    runs-on: macos-15-intel
+    if: |
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.build_macos_x64 == 'true'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install build dependencies
+      run: |
+        brew install autoconf automake libtool pkg-config yasm nasm
+        brew install x264
+        brew install libssh2 libxml2
+
+    - name: Build static binaries
+      run: |
+        chmod +x scripts/build-static-binaries.sh
+        scripts/build-static-binaries.sh darwin x64
+
+    - name: Verify binaries
+      run: |
+        echo "验证 macOS x64 二进制文件..."
+        ls -lh bin/darwin/x64/ffmpeg bin/darwin/x64/aria2c
+        file bin/darwin/x64/ffmpeg bin/darwin/x64/aria2c
+        otool -L bin/darwin/x64/ffmpeg bin/darwin/x64/aria2c || true
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: binaries-macos-x64
+        path: bin/darwin/x64/*
+        retention-days: 7
+
   build_linux:
     runs-on: ubuntu-latest
+    if: |
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.build_linux == 'true'
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -45,6 +140,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential autoconf automake libtool pkg-config yasm nasm
+        sudo apt-get install -y libx264-dev
+        sudo apt-get install -y libssh2-1-dev libxml2-dev libexpat1-dev
 
     - name: Build static binaries
       run: |
@@ -56,6 +153,7 @@ jobs:
         echo "验证 Linux 二进制文件..."
         ls -lh bin/linux/x64/ffmpeg bin/linux/x64/aria2c
         file bin/linux/x64/ffmpeg bin/linux/x64/aria2c
+        ldd bin/linux/x64/ffmpeg bin/linux/x64/aria2c || true
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
@@ -71,7 +169,7 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' &&
       github.event.inputs.upload_to_release == 'true'
-    needs: [build_linux]
+    needs: [build_windows, build_macos_arm64, build_macos_x64, build_linux]
 
     steps:
     - name: Checkout code
@@ -92,6 +190,24 @@ jobs:
         if [ -d "bin-artifacts/binaries-linux-x64" ]; then
           mkdir -p bin/linux/x64
           cp bin-artifacts/binaries-linux-x64/* bin/linux/x64/
+        fi
+
+        # Windows
+        if [ -d "bin-artifacts/binaries-windows-x64" ]; then
+          mkdir -p bin/win32/x64
+          cp bin-artifacts/binaries-windows-x64/* bin/win32/x64/
+        fi
+
+        # macOS ARM64
+        if [ -d "bin-artifacts/binaries-macos-arm64" ]; then
+          mkdir -p bin/darwin/arm64
+          cp bin-artifacts/binaries-macos-arm64/* bin/darwin/arm64/
+        fi
+
+        # macOS x64
+        if [ -d "bin-artifacts/binaries-macos-x64" ]; then
+          mkdir -p bin/darwin/x64
+          cp bin-artifacts/binaries-macos-x64/* bin/darwin/x64/
         fi
 
         # 显示目录结构
