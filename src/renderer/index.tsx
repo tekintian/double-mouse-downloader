@@ -1,6 +1,5 @@
-import 'antd/dist/antd.css';
 import React, { FC } from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import './index.less';
 import LoginWindow from './windows/Login';
@@ -31,5 +30,4 @@ if (latestStorageVersion !== currentStorageVersion) {
   localStorage.setItem('version', latestStorageVersion);
 }
 
-const root = ReactDOM.createRoot(document.getElementById('app') as HTMLElement);
-root.render(<App />);
+ReactDOM.render(<App />, document.getElementById('app') as HTMLElement);
